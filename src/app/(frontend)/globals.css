@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 36 12% 93%; /* #f5f0ea */
+    --foreground: 0 0% 17%; /* #2b2b2b */
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 17%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 17%;
+
+    --primary: 213 65% 45%; /* #296ac0 */
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 220 15% 73%; /* #b5bbc8 */
+    --secondary-foreground: 0 0% 17%;
+
+    --muted: 36 12% 88%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: 213 65% 95%;
+    --accent-foreground: 213 65% 45%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 30 20% 88%;
+    --input: 30 20% 88%;
+    --ring: 213 65% 45%;
+
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+@layer components {
+  /* Custom component styles can go here */
+}
