@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import type { BlogPost, Media } from '@/payload-types'
 
 export const metadata = {
   title: 'Blog - Hellenic Next',
@@ -61,9 +62,9 @@ export default async function BlogPage({ searchParams }: BlogPageProps) {
           ) : (
             <>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-                {posts.map((post: any) => {
-                  const featuredImage = post.featuredImage
-                  const imageUrl = typeof featuredImage === 'object' ? featuredImage?.url : null
+                {posts.map((post: BlogPost) => {
+                  const featuredImage = post.featuredImage as Media | null
+                  const imageUrl = featuredImage?.url || null
 
                   return (
                     <Link key={post.id} href={`/blog/${post.slug}`} className="group">

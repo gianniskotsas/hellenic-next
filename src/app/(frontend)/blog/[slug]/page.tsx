@@ -8,6 +8,7 @@ import { Calendar, User, ArrowLeft } from 'lucide-react'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { Button } from '@/components/ui/button'
+import type { BlogPost, BlogCategory, Media } from '@/payload-types'
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -72,17 +73,17 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     notFound()
   }
 
-  const featuredImage = post.featuredImage
-  const imageUrl = typeof featuredImage === 'object' ? featuredImage?.url : null
+  const featuredImage = post.featuredImage as Media | null
+  const imageUrl = featuredImage?.url || null
 
   // Get related posts
   const relatedPostsIds = post.relatedPosts
     ? post.relatedPosts
-        .map((p: any) => (typeof p === 'object' ? p.id : p))
+        .map((p) => (typeof p === 'object' ? p.id : p))
         .filter(Boolean)
     : []
 
-  let relatedPosts: any[] = []
+  let relatedPosts: BlogPost[] = []
 
   if (relatedPostsIds.length > 0) {
     const { docs: related } = await payload.find({
@@ -150,8 +151,8 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             {/* Categories/Tags */}
             {post.categories && post.categories.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-6">
-                {post.categories.map((category: any) => {
-                  const cat = typeof category === 'object' ? category : null
+                {post.categories.map((category) => {
+                  const cat = typeof category === 'object' ? (category as BlogCategory) : null
                   if (!cat) return null
 
                   return (
@@ -225,10 +226,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
               <div>
                 <h2 className="text-2xl font-bold mb-6">Related Posts</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  {relatedPosts.map((relatedPost: any) => {
-                    const relatedImage = relatedPost.featuredImage
-                    const relatedImageUrl =
-                      typeof relatedImage === 'object' ? relatedImage?.url : null
+                  {relatedPosts.map((relatedPost) => {
+                    const relatedImage = relatedPost.featuredImage as Media | null
+                    const relatedImageUrl = relatedImage?.url || null
 
                     return (
                       <Link
