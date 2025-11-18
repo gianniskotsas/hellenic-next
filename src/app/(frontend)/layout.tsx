@@ -1,9 +1,12 @@
 import React from 'react'
-import './styles.css'
+import { Inter } from 'next/font/google'
+import './globals.css'
+
+const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  description: 'A blank template using Payload in a Next.js app.',
-  title: 'Payload Blank Template',
+  description: 'Connecting Greek professionals across the globe. Join our community for networking, opportunities, and knowledge sharing.',
+  title: 'Hellenic Next - Global Greek Professional Community',
 }
 
 export default async function RootLayout(props: { children: React.ReactNode }) {
@@ -11,8 +14,8 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
   return (
     <html lang="en">
-      <body>
-        <main>{children}</main>
+      <body className={inter.className}>
+        {children}
       </body>
     </html>
   )
