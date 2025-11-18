@@ -8,6 +8,10 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import type { BlogPost, Media } from '@/payload-types'
 
+// Force dynamic rendering - required for Cloudflare Pages deployment
+// as Payload CMS needs access to D1 database at runtime
+export const dynamic = 'force-dynamic'
+
 export const metadata = {
   title: 'Blog - Hellenic Next',
   description: 'Read the latest insights and updates from the Hellenic Next community.',

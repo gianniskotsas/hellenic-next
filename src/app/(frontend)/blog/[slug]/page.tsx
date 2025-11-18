@@ -10,6 +10,10 @@ import config from '@payload-config'
 import { Button } from '@/components/ui/button'
 import type { BlogPost, BlogCategory, Media } from '@/payload-types'
 
+// Force dynamic rendering - required for Cloudflare Pages deployment
+// as Payload CMS needs access to D1 database at runtime
+export const dynamic = 'force-dynamic'
+
 interface BlogPostPageProps {
   params: Promise<{
     slug: string
