@@ -1,8 +1,5 @@
 import React from 'react'
-import { Inter } from 'next/font/google'
 import './globals.css'
-
-const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
   description: 'Connecting Greek professionals across the globe. Join our community for networking, opportunities, and knowledge sharing.',
@@ -14,7 +11,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className="font-sans">
         {children}
       </body>
     </html>

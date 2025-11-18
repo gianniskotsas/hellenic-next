@@ -19,7 +19,7 @@ export function RichTextRenderer({ content }: RichTextRendererProps) {
     }
 
     if (node.type === 'heading') {
-      const HeadingTag = `h${node.tag}` as keyof JSX.IntrinsicElements
+      const HeadingTag = `h${node.tag}` as keyof React.JSX.IntrinsicElements
       const headingClasses = {
         h1: 'text-4xl font-bold mb-6 mt-8',
         h2: 'text-3xl font-bold mb-4 mt-6',

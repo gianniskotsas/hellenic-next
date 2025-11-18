@@ -2,9 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 
+interface MemberRequestBody {
+  firstName: string
+  lastName: string
+  email: string
+  country: string
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
+    const body = (await request.json()) as MemberRequestBody
     const { firstName, lastName, email, country } = body
 
     // Validate required fields
@@ -51,8 +58,8 @@ export async function POST(request: NextRequest) {
         firstName,
         lastName,
         email,
-        country,
-        status: 'pending',
+        country: country as any, // Country codes are validated by the select options
+        status: 'pending' as const,
       },
     })
 
