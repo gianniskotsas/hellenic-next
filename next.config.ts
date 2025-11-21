@@ -7,6 +7,11 @@ initOpenNextCloudflareForDev()
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Your Next.js config here
+  images: {
+    // Disable Next.js image optimization for Cloudflare Workers
+    // Images are served directly from R2 via the custom media route
+    unoptimized: true,
+  },
   webpack: (webpackConfig: any) => {
     webpackConfig.resolve.extensionAlias = {
       '.cjs': ['.cts', '.cjs'],
