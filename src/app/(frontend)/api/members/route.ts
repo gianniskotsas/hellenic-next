@@ -1,12 +1,41 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
+import { countries } from 'country-data-list'
 
 interface MemberRequestBody {
   firstName: string
   lastName: string
   email: string
   country: string
+}
+
+interface UseSendContactBody {
+  email: string
+  firstName: string
+  lastName: string
+  properties: {
+    country: string
+  }
+  subscribed: boolean
+}
+
+async function addToUseSend(contactBookId: string, contactData: UseSendContactBody) {
+  const response = await fetch(`https://app.usesend.com/api/v1/contactBooks/${contactBookId}/contacts`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${process.env.USESEND_API_KEY}`,
+    },
+    body: JSON.stringify(contactData),
+  })
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    throw new Error(`useSend API error: ${response.status} - ${errorText}`)
+  }
+
+  return response.json()
 }
 
 export async function POST(request: NextRequest) {
@@ -62,6 +91,47 @@ export async function POST(request: NextRequest) {
         status: 'pending' as const,
       },
     })
+
+    // Get country name from alpha2 code
+    const countryData = countries.all.find((c) => c.alpha2 === country)
+    const countryName = countryData?.name || country
+
+    // Prepare contact data for useSend
+    const contactData: UseSendContactBody = {
+      email,
+      firstName,
+      lastName,
+      properties: {
+        country: countryName,
+      },
+      subscribed: true,
+    }
+
+    // Add to useSend contact books
+    try {
+      console.log('Country value:', country)
+      console.log('Is Netherlands?', country === 'NL')
+      console.log('Has NL contact book?', !!process.env.USESEND_CONTACTS_NL)
+
+      // Always add to global contact book
+      if (process.env.USESEND_CONTACTS_GLOBAL) {
+        console.log('Adding to global contact book:', process.env.USESEND_CONTACTS_GLOBAL)
+        await addToUseSend(process.env.USESEND_CONTACTS_GLOBAL, contactData)
+        console.log('Successfully added to global contact book')
+      }
+
+      // If Netherlands, also add to NL contact book
+      if (country === 'NL' && process.env.USESEND_CONTACTS_NL) {
+        console.log('Adding to NL contact book:', process.env.USESEND_CONTACTS_NL)
+        await addToUseSend(process.env.USESEND_CONTACTS_NL, contactData)
+        console.log('Successfully added to NL contact book')
+      } else if (country === 'NL') {
+        console.log('Netherlands selected but USESEND_CONTACTS_NL is not set')
+      }
+    } catch (useSendError) {
+      // Log the error but don't fail the request since member was created successfully
+      console.error('Error adding contact to useSend:', useSendError)
+    }
 
     return NextResponse.json(
       {

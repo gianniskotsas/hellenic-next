@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit -m \"$(cat <<''EOF''\nfix: Force dynamic rendering for Payload CMS pages\n\nAdd `export const dynamic = ''force-dynamic''` to pages that use Payload\nCMS to prevent build-time errors on Cloudflare Pages. The D1 database\nand environment variables are only available at runtime, not during\nthe build phase.\n\nPages modified:\n- Homepage (/)\n- Blog listing (/blog)\n- Blog post detail (/blog/[slug])\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(pnpm -v)",
+      "Bash(pnpm i:*)",
+      "Bash(pnpm dev)",
+      "Bash(pnpm install)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm run generate:types:payload:*)",
+      "Bash(pnpm run build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.usesend.com)",
+      "Bash(pnpm list:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfix: Resolve build and type errors\n\n- Add type definition for contact form data to fix TypeScript error\n- Install missing @eslint/eslintrc package required by ESLint config\n- Replace <a> tag with Next.js Link component in navbar logo\n- Configure Payload CMS to use local bindings during build to prevent\n  Wrangler authentication errors\n- Add dynamic rendering to Payload API routes for Cloudflare compatibility\n\nAll build and type checks now pass successfully.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

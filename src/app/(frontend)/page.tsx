@@ -1,5 +1,6 @@
-import { Navigation } from '@/components/Navigation'
+import NavbarDemo from '@/components/resizable-navbar-demo'
 import { Hero } from '@/components/Hero'
+import { FeaturedEvents } from '@/components/FeaturedEvents'
 import { FeaturedBlogPosts } from '@/components/FeaturedBlogPosts'
 
 // Force dynamic rendering - required for Cloudflare Pages deployment
@@ -9,9 +10,9 @@ export const dynamic = 'force-dynamic'
 export default async function HomePage() {
   return (
     <>
-      <Navigation />
-      <main>
+      <main className="px-4">
         <Hero />
+        <FeaturedEvents />
         <FeaturedBlogPosts />
       </main>
     </>

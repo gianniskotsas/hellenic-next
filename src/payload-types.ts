@@ -72,6 +72,7 @@ export interface Config {
     members: Member;
     'blog-posts': BlogPost;
     'blog-categories': BlogCategory;
+    events: Event;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -84,6 +85,7 @@ export interface Config {
     members: MembersSelect<false> | MembersSelect<true>;
     'blog-posts': BlogPostsSelect<false> | BlogPostsSelect<true>;
     'blog-categories': BlogCategoriesSelect<false> | BlogCategoriesSelect<true>;
+    events: EventsSelect<false> | EventsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -467,6 +469,114 @@ export interface BlogCategory {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: number;
+  title: string;
+  /**
+   * URL-friendly version of the title
+   */
+  slug: string;
+  /**
+   * Full event description and details
+   */
+  description: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Short summary for event listings
+   */
+  excerpt?: string | null;
+  /**
+   * Main event image/poster
+   */
+  featuredImage?: (number | null) | Media;
+  eventDetails: {
+    startDate: string;
+    /**
+     * Leave empty if single-day event
+     */
+    endDate?: string | null;
+    /**
+     * e.g., "6:30 PM" or "18:30"
+     */
+    startTime: string;
+    /**
+     * e.g., "10:30 PM" or "22:30"
+     */
+    endTime?: string | null;
+    /**
+     * Venue name
+     */
+    location: string;
+    /**
+     * Full address
+     */
+    address?: string | null;
+    city?: string | null;
+    country?: string | null;
+  };
+  registration?: {
+    /**
+     * External registration link (e.g., Eventbrite, Luma)
+     */
+    registrationUrl?: string | null;
+    /**
+     * Custom button text (default: "Register")
+     */
+    registrationButtonText?: string | null;
+    /**
+     * Maximum number of attendees (optional)
+     */
+    maxAttendees?: number | null;
+    /**
+     * Last day to register
+     */
+    registrationDeadline?: string | null;
+  };
+  organizers?:
+    | {
+        name: string;
+        avatar?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Number of people attending (e.g., "23 Going")
+   */
+  attendeeCount?: number | null;
+  status: 'draft' | 'upcoming' | 'ongoing' | 'completed' | 'cancelled';
+  /**
+   * Feature this event on the homepage
+   */
+  featured?: boolean | null;
+  /**
+   * Event categories/tags (e.g., networking, tech, social)
+   */
+  tags?:
+    | {
+        tag?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -508,6 +618,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'blog-categories';
         value: number | BlogCategory;
+      } | null)
+    | ({
+        relationTo: 'events';
+        value: number | Event;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -642,6 +756,55 @@ export interface BlogCategoriesSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   description?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  description?: T;
+  excerpt?: T;
+  featuredImage?: T;
+  eventDetails?:
+    | T
+    | {
+        startDate?: T;
+        endDate?: T;
+        startTime?: T;
+        endTime?: T;
+        location?: T;
+        address?: T;
+        city?: T;
+        country?: T;
+      };
+  registration?:
+    | T
+    | {
+        registrationUrl?: T;
+        registrationButtonText?: T;
+        maxAttendees?: T;
+        registrationDeadline?: T;
+      };
+  organizers?:
+    | T
+    | {
+        name?: T;
+        avatar?: T;
+        id?: T;
+      };
+  attendeeCount?: T;
+  status?: T;
+  featured?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

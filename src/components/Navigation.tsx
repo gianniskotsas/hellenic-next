@@ -26,6 +26,12 @@ export function Navigation() {
               Home
             </Link>
             <Link
+              href="/events"
+              className="text-foreground hover:text-primary transition-colors font-medium"
+            >
+              Events
+            </Link>
+            <Link
               href="/blog"
               className="text-foreground hover:text-primary transition-colors font-medium"
             >
@@ -63,6 +69,13 @@ export function Navigation() {
               onClick={() => setIsMenuOpen(false)}
             >
               Home
+            </Link>
+            <Link
+              href="/events"
+              className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:text-primary hover:bg-accent transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Events
             </Link>
             <Link
               href="/blog"
