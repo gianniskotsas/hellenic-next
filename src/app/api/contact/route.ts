@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { UseSend } from 'usesend-js'
 
-const usesend = new UseSend(process.env.USESEND_API_KEY || '')
+// Force dynamic rendering to prevent build-time initialization
+export const dynamic = 'force-dynamic'
 
 interface ContactFormData {
   name: string
@@ -49,6 +50,9 @@ export async function POST(request: NextRequest) {
         { status: 500 }
       )
     }
+
+    // Initialize UseSend client (done here to avoid build-time initialization)
+    const usesend = new UseSend(process.env.USESEND_API_KEY)
 
     // Send email using useSend
     await usesend.emails.send({
