@@ -73,8 +73,16 @@ export default buildConfig({
   plugins: [
     // storage-adapter-placeholder
     r2Storage({
+      collections: {
+        media: {
+          disableLocalStorage: true,
+          // Generate file URL for the custom route
+          generateFileURL: ({ filename }) => {
+            return `/api/media/file/${filename}`
+          },
+        },
+      },
       bucket: cloudflare.env.R2,
-      collections: { media: true },
     }),
   ],
 })
