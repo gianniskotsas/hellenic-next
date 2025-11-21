@@ -11,6 +11,9 @@ import {
   REST_PUT,
 } from '@payloadcms/next/routes'
 
+// Force dynamic rendering to prevent build-time errors with Cloudflare bindings
+export const dynamic = 'force-dynamic'
+
 export const GET = REST_GET(config)
 export const POST = REST_POST(config)
 export const DELETE = REST_DELETE(config)
