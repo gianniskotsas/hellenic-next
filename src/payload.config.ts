@@ -19,15 +19,17 @@ import { Events } from './collections/Events'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-// Detect if we're running in Cloudflare Pages production runtime
-// In production, CF_PAGES is set to "1"
-const isCloudflareRuntime = process.env.CF_PAGES === '1'
+// Detect if we're running Payload CLI commands (generate/migrate)
+const isPayloadCommand = process.argv.find((value) => value.match(/^(generate|migrate):?/))
 
-// During build/dev/generate: use wrangler bindings
-// During production runtime: use actual Cloudflare context
-const cloudflare = isCloudflareRuntime
-  ? await getCloudflareContext({ async: true })
-  : await getCloudflareContextFromWrangler()
+// Detect if we're in Cloudflare runtime (set by wrangler.jsonc vars)
+const isCloudflareRuntime = process.env.CLOUDFLARE_RUNTIME === 'true'
+
+// Get Cloudflare context based on environment
+const cloudflare =
+  isPayloadCommand || !isCloudflareRuntime
+    ? await getCloudflareContextFromWrangler() // Local dev/build or Payload commands
+    : await getCloudflareContext({ async: true }) // Cloudflare Workers/Pages runtime
 
 export default buildConfig({
   admin: {
