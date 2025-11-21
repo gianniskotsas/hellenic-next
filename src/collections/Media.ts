@@ -17,4 +17,16 @@ export const Media: CollectionConfig = {
     crop: false,
     focalPoint: false,
   },
+  hooks: {
+    beforeChange: [
+      ({ data }) => {
+        // Fix for R2 storage plugin not setting URL in production
+        // Ensure url field is populated based on filename
+        if (data.filename && !data.url) {
+          data.url = `/api/media/file/${data.filename}`
+        }
+        return data
+      },
+    ],
+  },
 }
