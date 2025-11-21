@@ -19,13 +19,15 @@ import { Events } from './collections/Events'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 
-// Always use local bindings for wrangler to avoid authentication issues during build
-// Only use remote bindings in actual production runtime (not during build)
-const cloudflareRemoteBindings = false
-const cloudflare =
-  process.argv.find((value) => value.match(/^(generate|migrate):?/)) || !cloudflareRemoteBindings
-    ? await getCloudflareContextFromWrangler()
-    : await getCloudflareContext({ async: true })
+// Detect if we're running in Cloudflare Pages production runtime
+// In production, CF_PAGES is set to "1"
+const isCloudflareRuntime = process.env.CF_PAGES === '1'
+
+// During build/dev/generate: use wrangler bindings
+// During production runtime: use actual Cloudflare context
+const cloudflare = isCloudflareRuntime
+  ? await getCloudflareContext({ async: true })
+  : await getCloudflareContextFromWrangler()
 
 export default buildConfig({
   admin: {
@@ -78,7 +80,7 @@ function getCloudflareContextFromWrangler(): Promise<CloudflareContext> {
     ({ getPlatformProxy }) =>
       getPlatformProxy({
         environment: process.env.CLOUDFLARE_ENV,
-        experimental: { remoteBindings: cloudflareRemoteBindings },
+        experimental: { remoteBindings: false },
       } satisfies GetPlatformProxyOptions),
   )
 }

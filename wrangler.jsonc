@@ -2,6 +2,13 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "main": ".open-next/worker.js",
   "name": "hellenic-next",
+  "observability": {
+    "logs": {
+      "enabled": false,
+      "head_sampling_rate": 1,
+      "invocation_logs": true
+    }
+  },
   "compatibility_date": "2025-08-15",
   "compatibility_flags": [
     // Enable Node.js API
@@ -33,7 +40,8 @@
   "r2_buckets": [
     {
       "binding": "R2",
-      "bucket_name": "hellenic-next-r2","preview_bucket_name": "hellenic-next-r2",
+      "bucket_name": "hellenic-next-r2",
+      "preview_bucket_name": "hellenic-next-r2",
     },
     // Create a R2 binding with the binding name "NEXT_INC_CACHE_R2_BUCKET"
     // {
