@@ -14,14 +14,13 @@ export function Hero() {
       >
         <div className="max-w-4xl mx-auto text-center relative z-10">
           {/* Main Heading */}
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground tracking-tight mb-6">
-            Connecting Greeks in Tech
+          <h1 className="text-4xl sm:text-5xl lg:text-8xl font-thin italic text-foreground tracking-tight mb-6">
+            Hellenic Next
           </h1>
 
           {/* Subtitle */}
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-            Connecting Greeks in tech, organize networking events in the Netherlands. in the
-            Netherlands.
+            Connecting Greeks in tech. Physical presence in the Netherlands, global reach.
           </p>
 
           {/* CTA Buttons */}

@@ -59,7 +59,7 @@ export default function Footer() {
               </h3>
               <div className="space-y-2 sm:space-y-3 flex flex-col">
                 <a
-                  href="https://linkedin.com"
+                  href="https://www.linkedin.com/company/hellenic-next/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm sm:text-base text-foreground font-bold hover:text-primary transition-colors flex items-center gap-2"
@@ -81,7 +81,7 @@ export default function Footer() {
                   </svg>
                 </a>
                 <a
-                  href="https://instagram.com"
+                  href="https://www.instagram.com/hellenicnext/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-sm sm:text-base text-foreground font-bold hover:text-primary transition-colors flex items-center gap-2"
@@ -111,9 +111,9 @@ export default function Footer() {
       {/* Large Brand Section - Positioned at rightmost */}
       <div className="bg-background py-8 sm:py-12 lg:py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-end">
-          <h2 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-foreground tracking-tight break-words">
+          <h3 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-black text-foreground tracking-tight break-words">
             hellenicnext
-          </h2>
+          </h3>
         </div>
       </div>
 

@@ -1,7 +1,15 @@
 import React from 'react'
+import { Crimson_Pro } from 'next/font/google'
 import './globals.css'
 import NavbarDemo from '@/components/resizable-navbar-demo'
 import Footer from '@/components/footer'
+
+const crimsonPro = Crimson_Pro({
+  subsets: ['latin'],
+  weight: ['200'],
+  style: ['italic'],
+  variable: '--font-crimson-pro',
+})
 
 export const metadata = {
   description:
@@ -14,7 +22,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
 
   return (
     <html lang="en">
-      <body className="font-sans bg-background">
+      <body className={`font-sans bg-background ${crimsonPro.variable}`}>
         <NavbarDemo />
         {children}
         <Footer />
