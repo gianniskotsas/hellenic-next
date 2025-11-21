@@ -17,7 +17,10 @@
       "WebFetch(domain:docs.usesend.com)",
       "Bash(pnpm list:*)",
       "Bash(git commit -m \"$(cat <<''EOF''\nfix: Resolve build and type errors\n\n- Add type definition for contact form data to fix TypeScript error\n- Install missing @eslint/eslintrc package required by ESLint config\n- Replace <a> tag with Next.js Link component in navbar logo\n- Configure Payload CMS to use local bindings during build to prevent\n  Wrangler authentication errors\n- Add dynamic rendering to Payload API routes for Cloudflare compatibility\n\nAll build and type checks now pass successfully.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(pnpm run payload:*)",
+      "Bash(wrangler d1 execute:*)",
+      "Bash(npx wrangler d1 execute:*)"
     ],
     "deny": [],
     "ask": []

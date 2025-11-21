@@ -45,7 +45,10 @@ export default buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   // database-adapter-config-start
-  db: sqliteD1Adapter({ binding: cloudflare.env.D1 }),
+  db: sqliteD1Adapter({
+    binding: cloudflare.env.D1,
+    push: true  // Auto-sync schema to database
+  }),
   // database-adapter-config-end
   // Only configure email if SMTP credentials are provided
   ...(process.env.SMTP_HOST &&
