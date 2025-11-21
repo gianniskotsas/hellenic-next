@@ -20,7 +20,13 @@
       "Bash(git commit:*)",
       "Bash(pnpm run payload:*)",
       "Bash(wrangler d1 execute:*)",
-      "Bash(npx wrangler d1 execute:*)"
+      "Bash(npx wrangler d1 execute:*)",
+      "Bash(npx wrangler:*)",
+      "WebFetch(domain:payloadcms.com)",
+      "Bash(cat:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl -I https://hellenic-next.pages.dev/api/media/file/hellenic_next.png)",
+      "Bash(curl -s http://localhost:3000/api/media/1)"
     ],
     "deny": [],
     "ask": []
