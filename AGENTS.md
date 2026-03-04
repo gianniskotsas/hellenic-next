@@ -29,6 +29,16 @@ SMTP and useSend env vars are optional (email features degrade gracefully).
 
 After starting the dev server, visit `/admin` to create the first admin user. The local D1 database is stored in `.wrangler/` and persists across restarts.
 
+### Newsletter feature
+
+The newsletter system uses `@react-email/render` + `@react-email/components` for email templates, and `usesend-js` for delivery. Key files:
+- Collection: `src/collections/Newsletters.ts`
+- Template: `src/emails/NewsletterTemplate.tsx` (swap this for custom templates)
+- API routes: `src/app/(frontend)/api/newsletters/{send,send-test,preview}/route.ts`
+- Admin UI component: `src/components/admin/NewsletterActions/index.tsx`
+
+After modifying the Newsletters collection or its custom component path, run `pnpm generate:importmap` to regenerate `src/app/(payload)/admin/importMap.js`.
+
 ### Known issues
 
 - `pnpm test:int` fails with "Invariant violation: TextEncoder" due to jsdom environment conflicting with esbuild. This is a pre-existing issue unrelated to environment setup.
