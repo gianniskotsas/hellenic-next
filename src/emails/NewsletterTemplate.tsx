@@ -6,11 +6,13 @@ import {
   Section,
   Text,
   Button,
-  Hr,
-  Preview,
-  Heading,
-  Font,
+  Tailwind,
+  Row,
+  Column,
   Img,
+  Link,
+  Preview,
+  Font,
 } from '@react-email/components'
 import * as React from 'react'
 
@@ -39,188 +41,150 @@ export const NewsletterTemplate: React.FC<NewsletterTemplateProps> = ({
   recipientName,
 }) => {
   return (
-    <Html lang="en">
-      <Head>
-        <Font
-          fontFamily="Inter"
-          fallbackFontFamily="Arial"
-          webFont={{
-            url: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap',
-            format: 'woff2',
-          }}
-          fontWeight={400}
-          fontStyle="normal"
-        />
-      </Head>
-      {previewText && <Preview>{previewText}</Preview>}
-      <Body style={main}>
-        <Container style={container}>
-          <Section style={header}>
-            <Text style={logo}>
-              hellenic<span style={logoAccent}>&#9654;</span>
-            </Text>
-          </Section>
+    <Html lang="en" dir="ltr">
+      <Tailwind>
+        <Head>
+          <Font
+            fontFamily="Inter"
+            fallbackFontFamily="Arial"
+            webFont={{
+              url: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap',
+              format: 'woff2',
+            }}
+            fontWeight={400}
+            fontStyle="normal"
+          />
+        </Head>
+        {previewText && <Preview>{previewText}</Preview>}
+        <Body className="bg-[#2b2b2b] font-sans py-[40px] px-[8px]">
+          <Container className="max-w-[600px] mx-auto bg-[#f5f0ea] px-[50px] py-[40px] rounded-3xl">
 
-          {heroImageUrl && (
-            <Section>
+            {/* Logo */}
+            <Section className="mb-[40px]">
               <Img
-                src={heroImageUrl}
-                alt="Newsletter image"
-                width="600"
-                style={heroImg}
+                src="https://pub-9a7afb92aeda47c8a8856a83903f29d1.r2.dev/hellenic-next/hellenic_next_logo_transparent.png"
+                alt="Hellenic Next Logo"
+                width="40"
+                height="40"
+                className="w-16 h-16"
               />
             </Section>
-          )}
 
-          <Section style={content}>
-            {recipientName && (
-              <Text style={greeting}>Dear {recipientName},</Text>
-            )}
+            {/* Main Content with Optional Illustration */}
+            <Section className="mb-[40px]">
+              {heroImageUrl ? (
+                <Row>
+                  <Column className="w-[70%] align-top">
+                    <Text className="text-[24px] font-serif text-[#2b2b2b] leading-[1.2] m-0 mb-[10px]">
+                      Hellenic Next
+                    </Text>
+                    <Text className="text-[36px] font-black text-[#2b2b2b] leading-[0.9] m-0 mb-[16px]">
+                      {heading}
+                    </Text>
+                    {subtitle && (
+                      <Text className="text-[18px] font-medium text-[#2b2b2b] m-0 mb-[32px] leading-[1.3]">
+                        {subtitle}
+                      </Text>
+                    )}
+                  </Column>
+                  <Column className="w-[30%] align-top text-center px-8">
+                    <Img
+                      src={heroImageUrl}
+                      alt="Newsletter Illustration"
+                      width="200"
+                      height="140"
+                      className="object-cover"
+                    />
+                  </Column>
+                </Row>
+              ) : (
+                <>
+                  <Text className="text-[24px] font-serif text-[#2b2b2b] leading-[1.2] m-0 mb-[10px]">
+                    Hellenic Next
+                  </Text>
+                  <Text className="text-[36px] font-black text-[#2b2b2b] leading-[0.9] m-0 mb-[16px]">
+                    {heading}
+                  </Text>
+                  {subtitle && (
+                    <Text className="text-[18px] font-medium text-[#2b2b2b] m-0 mb-[32px] leading-[1.3]">
+                      {subtitle}
+                    </Text>
+                  )}
+                </>
+              )}
+            </Section>
 
-            <Heading as="h1" style={h1}>
-              {heading}
-            </Heading>
+            {/* Rich text body */}
+            <Section className="mb-[50px]">
+              {recipientName && (
+                <Text className="text-[16px] text-[#666666] m-0 mb-[16px]">
+                  Dear {recipientName},
+                </Text>
+              )}
+              <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
+            </Section>
 
-            {subtitle && (
-              <Text style={subtitleStyle}>{subtitle}</Text>
-            )}
-
-            <div
-              style={bodyStyle}
-              dangerouslySetInnerHTML={{ __html: bodyHtml }}
-            />
-
+            {/* CTA Buttons */}
             {ctaButtons && ctaButtons.length > 0 && (
-              <Section style={ctaSection}>
+              <Section className="text-center mb-[40px]">
                 {ctaButtons.map((cta, index) => (
-                  <Button key={index} style={ctaButton} href={cta.url}>
+                  <Button
+                    key={index}
+                    href={cta.url}
+                    className="bg-[#2b2b2b] text-white text-[18px] font-semibold px-[50px] py-[16px] w-full rounded-2xl mx-auto box-border text-center no-underline mb-[12px]"
+                  >
                     {cta.text}
                   </Button>
                 ))}
               </Section>
             )}
-          </Section>
 
-          <Hr style={divider} />
+            {/* Footer */}
+            <Section className="text-center">
+              <Img
+                alt="Hellenic Next"
+                height="42"
+                src="https://pub-9a7afb92aeda47c8a8856a83903f29d1.r2.dev/hellenic-next/hellenic_next_logo_transparent.png"
+                width="42"
+                style={{ margin: '0 auto', display: 'block' }}
+              />
+              <Text className="my-[8px] font-semibold text-[16px] text-gray-900 leading-[24px]">
+                Hellenic Next
+              </Text>
+              <Text className="mt-0 mb-[16px] text-[14px] text-gray-500 leading-[24px]">
+                Connecting Greeks in tech.
+              </Text>
+              <table style={{ margin: '0 auto', borderCollapse: 'collapse' }}>
+                <tr>
+                  <td style={{ padding: '0 8px' }}>
+                    <Link href="https://chat.whatsapp.com/CF8KK6Sx6JsCRlqi3g9AZC?mode=gi_t&utm_source=ig&utm_medium=social&utm_content=link_in_bio">
+                      <Img alt="WhatsApp" height="28" width="28" src="https://pub-9a7afb92aeda47c8a8856a83903f29d1.r2.dev/social-icons/outline-black/whatsapp.png" />
+                    </Link>
+                  </td>
+                  <td style={{ padding: '0 8px' }}>
+                    <Link href="https://www.linkedin.com/company/hellenic-next">
+                      <Img alt="LinkedIn" height="28" width="28" src="https://pub-9a7afb92aeda47c8a8856a83903f29d1.r2.dev/social-icons/outline-black/linkedin.png" />
+                    </Link>
+                  </td>
+                  <td style={{ padding: '0 8px' }}>
+                    <Link href="https://www.instagram.com/hellenicnext?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">
+                      <Img alt="Instagram" height="28" width="28" src="https://pub-9a7afb92aeda47c8a8856a83903f29d1.r2.dev/social-icons/outline-black/instagram.png" />
+                    </Link>
+                  </td>
+                  <td style={{ padding: '0 8px' }}>
+                    <Link href="https://hellenicnext.com">
+                      <Img alt="Website" height="28" width="28" src="https://pub-9a7afb92aeda47c8a8856a83903f29d1.r2.dev/social-icons/outline-black/webpage.png" />
+                    </Link>
+                  </td>
+                </tr>
+              </table>
+            </Section>
 
-          <Section style={footer}>
-            <Text style={footerText}>
-              &copy; {new Date().getFullYear()} Hellenic Next. All rights reserved.
-            </Text>
-            <Text style={footerText}>
-              Connecting Greek professionals worldwide.
-            </Text>
-          </Section>
-        </Container>
-      </Body>
+          </Container>
+        </Body>
+      </Tailwind>
     </Html>
   )
 }
 
 export default NewsletterTemplate
-
-const main: React.CSSProperties = {
-  backgroundColor: '#f5f0ea',
-  fontFamily: 'Inter, Arial, sans-serif',
-}
-
-const container: React.CSSProperties = {
-  maxWidth: '600px',
-  margin: '0 auto',
-  backgroundColor: '#ffffff',
-  borderRadius: '8px',
-  overflow: 'hidden',
-  marginTop: '40px',
-  marginBottom: '40px',
-  boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-}
-
-const header: React.CSSProperties = {
-  backgroundColor: '#2b2b2b',
-  padding: '24px 40px',
-  textAlign: 'center' as const,
-}
-
-const logo: React.CSSProperties = {
-  color: '#ffffff',
-  fontSize: '24px',
-  fontWeight: 700,
-  margin: '0',
-  letterSpacing: '-0.5px',
-}
-
-const logoAccent: React.CSSProperties = {
-  color: '#f5f0ea',
-}
-
-const heroImg: React.CSSProperties = {
-  width: '100%',
-  display: 'block',
-}
-
-const content: React.CSSProperties = {
-  padding: '40px',
-}
-
-const greeting: React.CSSProperties = {
-  color: '#666666',
-  fontSize: '16px',
-  lineHeight: '24px',
-  margin: '0 0 16px 0',
-}
-
-const h1: React.CSSProperties = {
-  color: '#2b2b2b',
-  fontSize: '28px',
-  fontWeight: 700,
-  lineHeight: '36px',
-  margin: '0 0 12px 0',
-}
-
-const subtitleStyle: React.CSSProperties = {
-  color: '#2b2b2b',
-  fontSize: '18px',
-  lineHeight: '26px',
-  margin: '0 0 24px 0',
-}
-
-const bodyStyle: React.CSSProperties = {
-  color: '#2b2b2b',
-  fontSize: '16px',
-  lineHeight: '26px',
-}
-
-const ctaSection: React.CSSProperties = {
-  textAlign: 'center' as const,
-  marginTop: '32px',
-  marginBottom: '16px',
-}
-
-const ctaButton: React.CSSProperties = {
-  backgroundColor: '#2b2b2b',
-  color: '#ffffff',
-  fontSize: '16px',
-  fontWeight: 600,
-  textDecoration: 'none',
-  padding: '12px 32px',
-  borderRadius: '6px',
-  display: 'inline-block',
-  marginBottom: '8px',
-}
-
-const divider: React.CSSProperties = {
-  borderColor: '#e5e5e5',
-  margin: '0',
-}
-
-const footer: React.CSSProperties = {
-  padding: '24px 40px',
-  textAlign: 'center' as const,
-}
-
-const footerText: React.CSSProperties = {
-  color: '#666666',
-  fontSize: '12px',
-  lineHeight: '20px',
-  margin: '0',
-}
