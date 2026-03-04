@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { render } from '@react-email/render'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { UseSend } from 'usesend-js'
 import { cookies } from 'next/headers'
-import { NewsletterTemplate } from '@/emails/NewsletterTemplate'
+import { renderNewsletterHtml } from '@/emails/renderNewsletter'
 
 export const dynamic = 'force-dynamic'
+
+function getBaseUrl(request: NextRequest): string {
+  const proto = request.headers.get('x-forwarded-proto') || 'http'
+  const host = request.headers.get('host') || 'localhost:3000'
+  return process.env.NEXT_PUBLIC_SITE_URL || `${proto}://${host}`
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,6 +37,7 @@ export async function POST(request: NextRequest) {
     const newsletter = await payload.findByID({
       collection: 'newsletters',
       id,
+      depth: 2,
       overrideAccess: true,
     })
 
@@ -76,6 +82,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    const baseUrl = getBaseUrl(request)
     const usesend = new UseSend(process.env.USESEND_API_KEY)
     let sent = 0
     let failed = 0
@@ -83,17 +90,7 @@ export async function POST(request: NextRequest) {
     for (const member of recipients.docs) {
       try {
         const recipientName = `${member.firstName} ${member.lastName}`.trim()
-        const html = await render(
-          NewsletterTemplate({
-            subject: newsletter.subject,
-            previewText: newsletter.previewText || '',
-            heading: newsletter.heading,
-            body: newsletter.body,
-            ctaText: newsletter.ctaText || undefined,
-            ctaUrl: newsletter.ctaUrl || undefined,
-            recipientName: recipientName || undefined,
-          }),
-        )
+        const html = await renderNewsletterHtml(newsletter, baseUrl, recipientName || undefined)
 
         await usesend.emails.send({
           to: member.email,

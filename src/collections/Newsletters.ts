@@ -10,10 +10,24 @@ export const Newsletters: CollectionConfig = {
   },
   admin: {
     useAsTitle: 'subject',
-    defaultColumns: ['subject', 'recipientGroup', 'status', 'sentAt'],
+    defaultColumns: ['subject', 'template', 'recipientGroup', 'status', 'sentAt'],
     description: 'Create and send newsletters to community members.',
   },
   fields: [
+    {
+      name: 'template',
+      type: 'select',
+      required: true,
+      defaultValue: 'general',
+      label: 'Email Template',
+      options: [
+        { label: 'General Newsletter', value: 'general' },
+        { label: 'Event Invitation', value: 'event' },
+      ],
+      admin: {
+        description: 'Choose the email layout template',
+      },
+    },
     {
       name: 'subject',
       type: 'text',
@@ -35,36 +49,88 @@ export const Newsletters: CollectionConfig = {
       name: 'heading',
       type: 'text',
       required: true,
-      label: 'Newsletter Heading',
+      label: 'Heading',
       admin: {
-        description: 'The main heading displayed in the email body',
+        description: 'Main heading displayed in the email body',
+      },
+    },
+    {
+      name: 'subtitle',
+      type: 'text',
+      label: 'Subtitle',
+      admin: {
+        description: 'Displayed below the heading (e.g. "Networking & Holiday Cheer in Amsterdam")',
+      },
+    },
+    {
+      name: 'heroImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Hero / Illustration Image',
+      admin: {
+        description: 'An image displayed in the email (e.g. event illustration, banner). Logos are hardcoded in templates.',
       },
     },
     {
       name: 'body',
       type: 'textarea',
       required: true,
-      label: 'Newsletter Content',
+      label: 'Content',
       admin: {
         description: 'The main content of the newsletter. Supports HTML for formatting.',
-        rows: 12,
+        rows: 10,
       },
     },
     {
-      name: 'ctaText',
-      type: 'text',
-      label: 'Call to Action Text',
+      name: 'ctaButtons',
+      type: 'array',
+      label: 'Call to Action Buttons',
+      maxRows: 3,
       admin: {
-        description: 'Button text (e.g., "Read More", "Register Now"). Leave empty for no button.',
+        description: 'Add one or more CTA buttons. Leave empty for no buttons.',
       },
+      fields: [
+        {
+          name: 'text',
+          type: 'text',
+          required: true,
+          label: 'Button Text',
+          admin: { description: 'e.g. "RSVP Now", "Read More", "Register"' },
+        },
+        {
+          name: 'url',
+          type: 'text',
+          required: true,
+          label: 'Button URL',
+        },
+      ],
     },
     {
-      name: 'ctaUrl',
-      type: 'text',
-      label: 'Call to Action URL',
+      name: 'eventDetails',
+      type: 'group',
+      label: 'Event Details',
       admin: {
-        description: 'URL the button links to',
+        description: 'Only used when the Event Invitation template is selected.',
+        condition: (_data, siblingData) => siblingData?.template === 'event',
       },
+      fields: [
+        {
+          name: 'eventDate',
+          type: 'text',
+          label: 'When',
+          admin: {
+            description: 'e.g. "Wednesday, December 10th, 18:30"',
+          },
+        },
+        {
+          name: 'eventLocation',
+          type: 'text',
+          label: 'Location',
+          admin: {
+            description: 'e.g. "A Beautiful Mess, Amsterdam"',
+          },
+        },
+      ],
     },
     {
       name: 'recipientGroup',
@@ -104,37 +170,23 @@ export const Newsletters: CollectionConfig = {
       admin: {
         position: 'sidebar',
         readOnly: true,
-        date: {
-          pickerAppearance: 'dayAndTime',
-        },
+        date: { pickerAppearance: 'dayAndTime' },
       },
     },
     {
       name: 'totalRecipients',
       type: 'number',
-      admin: {
-        position: 'sidebar',
-        readOnly: true,
-        description: 'Total recipients targeted',
-      },
+      admin: { position: 'sidebar', readOnly: true, description: 'Total recipients targeted' },
     },
     {
       name: 'totalSent',
       type: 'number',
-      admin: {
-        position: 'sidebar',
-        readOnly: true,
-        description: 'Emails successfully sent',
-      },
+      admin: { position: 'sidebar', readOnly: true, description: 'Emails successfully sent' },
     },
     {
       name: 'totalFailed',
       type: 'number',
-      admin: {
-        position: 'sidebar',
-        readOnly: true,
-        description: 'Emails that failed to send',
-      },
+      admin: { position: 'sidebar', readOnly: true, description: 'Emails that failed to send' },
     },
     {
       name: 'newsletterActions',

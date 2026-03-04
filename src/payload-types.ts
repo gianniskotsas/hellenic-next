@@ -586,6 +586,10 @@ export interface Event {
 export interface Newsletter {
   id: number;
   /**
+   * Choose the email layout template
+   */
+  template: 'general' | 'event';
+  /**
    * The subject line of the newsletter email
    */
   subject: string;
@@ -594,21 +598,47 @@ export interface Newsletter {
    */
   previewText?: string | null;
   /**
-   * The main heading displayed in the email body
+   * Main heading displayed in the email body
    */
   heading: string;
+  /**
+   * Displayed below the heading (e.g. "Networking & Holiday Cheer in Amsterdam")
+   */
+  subtitle?: string | null;
+  /**
+   * An image displayed in the email (e.g. event illustration, banner). Logos are hardcoded in templates.
+   */
+  heroImage?: (number | null) | Media;
   /**
    * The main content of the newsletter. Supports HTML for formatting.
    */
   body: string;
   /**
-   * Button text (e.g., "Read More", "Register Now"). Leave empty for no button.
+   * Add one or more CTA buttons. Leave empty for no buttons.
    */
-  ctaText?: string | null;
+  ctaButtons?:
+    | {
+        /**
+         * e.g. "RSVP Now", "Read More", "Register"
+         */
+        text: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
   /**
-   * URL the button links to
+   * Only used when the Event Invitation template is selected.
    */
-  ctaUrl?: string | null;
+  eventDetails?: {
+    /**
+     * e.g. "Wednesday, December 10th, 18:30"
+     */
+    eventDate?: string | null;
+    /**
+     * e.g. "A Beautiful Mess, Amsterdam"
+     */
+    eventLocation?: string | null;
+  };
   /**
    * Choose which group of members will receive this newsletter
    */
@@ -875,12 +905,26 @@ export interface EventsSelect<T extends boolean = true> {
  * via the `definition` "newsletters_select".
  */
 export interface NewslettersSelect<T extends boolean = true> {
+  template?: T;
   subject?: T;
   previewText?: T;
   heading?: T;
+  subtitle?: T;
+  heroImage?: T;
   body?: T;
-  ctaText?: T;
-  ctaUrl?: T;
+  ctaButtons?:
+    | T
+    | {
+        text?: T;
+        url?: T;
+        id?: T;
+      };
+  eventDetails?:
+    | T
+    | {
+        eventDate?: T;
+        eventLocation?: T;
+      };
   recipientGroup?: T;
   status?: T;
   sentAt?: T;

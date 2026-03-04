@@ -10,26 +10,32 @@ import {
   Preview,
   Heading,
   Font,
+  Img,
 } from '@react-email/components'
 import * as React from 'react'
 
+export interface CtaButton {
+  text: string
+  url: string
+}
+
 export interface NewsletterTemplateProps {
-  subject: string
   previewText?: string
   heading: string
+  subtitle?: string
+  heroImageUrl?: string
   body: string
-  ctaText?: string
-  ctaUrl?: string
+  ctaButtons?: CtaButton[]
   recipientName?: string
 }
 
 export const NewsletterTemplate: React.FC<NewsletterTemplateProps> = ({
-  subject: _subject,
   previewText,
   heading,
+  subtitle,
+  heroImageUrl,
   body,
-  ctaText,
-  ctaUrl,
+  ctaButtons,
   recipientName,
 }) => {
   const formattedBody = body.includes('<')
@@ -59,6 +65,17 @@ export const NewsletterTemplate: React.FC<NewsletterTemplateProps> = ({
             </Text>
           </Section>
 
+          {heroImageUrl && (
+            <Section>
+              <Img
+                src={heroImageUrl}
+                alt="Newsletter image"
+                width="600"
+                style={heroImg}
+              />
+            </Section>
+          )}
+
           <Section style={content}>
             {recipientName && (
               <Text style={greeting}>Dear {recipientName},</Text>
@@ -68,6 +85,10 @@ export const NewsletterTemplate: React.FC<NewsletterTemplateProps> = ({
               {heading}
             </Heading>
 
+            {subtitle && (
+              <Text style={subtitleStyle}>{subtitle}</Text>
+            )}
+
             <div
               style={bodyStyle}
               dangerouslySetInnerHTML={{
@@ -75,11 +96,13 @@ export const NewsletterTemplate: React.FC<NewsletterTemplateProps> = ({
               }}
             />
 
-            {ctaText && ctaUrl && (
+            {ctaButtons && ctaButtons.length > 0 && (
               <Section style={ctaSection}>
-                <Button style={ctaButton} href={ctaUrl}>
-                  {ctaText}
-                </Button>
+                {ctaButtons.map((cta, index) => (
+                  <Button key={index} style={ctaButton} href={cta.url}>
+                    {cta.text}
+                  </Button>
+                ))}
               </Section>
             )}
           </Section>
@@ -133,7 +156,12 @@ const logo: React.CSSProperties = {
 }
 
 const logoAccent: React.CSSProperties = {
-  color: '#296ac0',
+  color: '#f5f0ea',
+}
+
+const heroImg: React.CSSProperties = {
+  width: '100%',
+  display: 'block',
 }
 
 const content: React.CSSProperties = {
@@ -152,6 +180,13 @@ const h1: React.CSSProperties = {
   fontSize: '28px',
   fontWeight: 700,
   lineHeight: '36px',
+  margin: '0 0 12px 0',
+}
+
+const subtitleStyle: React.CSSProperties = {
+  color: '#2b2b2b',
+  fontSize: '18px',
+  lineHeight: '26px',
   margin: '0 0 24px 0',
 }
 
@@ -168,7 +203,7 @@ const ctaSection: React.CSSProperties = {
 }
 
 const ctaButton: React.CSSProperties = {
-  backgroundColor: '#296ac0',
+  backgroundColor: '#2b2b2b',
   color: '#ffffff',
   fontSize: '16px',
   fontWeight: 600,
@@ -176,6 +211,7 @@ const ctaButton: React.CSSProperties = {
   padding: '12px 32px',
   borderRadius: '6px',
   display: 'inline-block',
+  marginBottom: '8px',
 }
 
 const divider: React.CSSProperties = {
@@ -189,7 +225,7 @@ const footer: React.CSSProperties = {
 }
 
 const footerText: React.CSSProperties = {
-  color: '#999999',
+  color: '#666666',
   fontSize: '12px',
   lineHeight: '20px',
   margin: '0',
