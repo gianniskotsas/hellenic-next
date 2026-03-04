@@ -73,6 +73,7 @@ export interface Config {
     'blog-posts': BlogPost;
     'blog-categories': BlogCategory;
     events: Event;
+    newsletters: Newsletter;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -86,6 +87,7 @@ export interface Config {
     'blog-posts': BlogPostsSelect<false> | BlogPostsSelect<true>;
     'blog-categories': BlogCategoriesSelect<false> | BlogCategoriesSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
+    newsletters: NewslettersSelect<false> | NewslettersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -576,6 +578,62 @@ export interface Event {
   createdAt: string;
 }
 /**
+ * Create and send newsletters to community members.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newsletters".
+ */
+export interface Newsletter {
+  id: number;
+  /**
+   * The subject line of the newsletter email
+   */
+  subject: string;
+  /**
+   * Short preview text shown in email clients (before opening)
+   */
+  previewText?: string | null;
+  /**
+   * The main heading displayed in the email body
+   */
+  heading: string;
+  /**
+   * The main content of the newsletter. Supports HTML for formatting.
+   */
+  body: string;
+  /**
+   * Button text (e.g., "Read More", "Register Now"). Leave empty for no button.
+   */
+  ctaText?: string | null;
+  /**
+   * URL the button links to
+   */
+  ctaUrl?: string | null;
+  /**
+   * Choose which group of members will receive this newsletter
+   */
+  recipientGroup: 'all' | 'global' | 'nl';
+  /**
+   * Status is updated automatically when sending
+   */
+  status: 'draft' | 'sending' | 'sent' | 'failed';
+  sentAt?: string | null;
+  /**
+   * Total recipients targeted
+   */
+  totalRecipients?: number | null;
+  /**
+   * Emails successfully sent
+   */
+  totalSent?: number | null;
+  /**
+   * Emails that failed to send
+   */
+  totalFailed?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -622,6 +680,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'events';
         value: number | Event;
+      } | null)
+    | ({
+        relationTo: 'newsletters';
+        value: number | Newsletter;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -805,6 +867,26 @@ export interface EventsSelect<T extends boolean = true> {
         tag?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newsletters_select".
+ */
+export interface NewslettersSelect<T extends boolean = true> {
+  subject?: T;
+  previewText?: T;
+  heading?: T;
+  body?: T;
+  ctaText?: T;
+  ctaUrl?: T;
+  recipientGroup?: T;
+  status?: T;
+  sentAt?: T;
+  totalRecipients?: T;
+  totalSent?: T;
+  totalFailed?: T;
   updatedAt?: T;
   createdAt?: T;
 }
