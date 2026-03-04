@@ -28,7 +28,7 @@ const NewsletterActions: React.FC = () => {
         credentials: 'include',
       })
       if (!response.ok) {
-        const data = await response.json()
+        const data = await response.json() as { message?: string }
         setMessage(data.message || 'Failed to load preview')
         return
       }
@@ -62,11 +62,11 @@ const NewsletterActions: React.FC = () => {
         body: JSON.stringify({ id, testEmail }),
       })
 
-      const data = await response.json()
+      const data = await response.json() as { message?: string }
       if (response.ok) {
         setSendTestStatus('success')
         setMessageIsError(false)
-        setMessage(data.message)
+        setMessage(data.message ?? '')
       } else {
         setSendTestStatus('error')
         setMessageIsError(true)
@@ -101,11 +101,11 @@ const NewsletterActions: React.FC = () => {
         body: JSON.stringify({ id }),
       })
 
-      const data = await response.json()
+      const data = await response.json() as { message?: string }
       if (response.ok) {
         setSendLiveStatus('success')
         setMessageIsError(false)
-        setMessage(data.message)
+        setMessage(data.message ?? '')
       } else {
         setSendLiveStatus('error')
         setMessageIsError(true)

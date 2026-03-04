@@ -3,6 +3,7 @@ import { NewsletterTemplate } from './NewsletterTemplate'
 import { EventNewsletterTemplate } from './EventNewsletterTemplate'
 import { lexicalToHtml } from './lexicalToHtml'
 import type { CtaButton } from './NewsletterTemplate'
+import React from 'react'
 
 interface MediaDoc {
   filename?: string
@@ -49,28 +50,28 @@ export async function renderNewsletterHtml(
 
   if (newsletter.template === 'event') {
     return render(
-      EventNewsletterTemplate({
-        previewText: newsletter.previewText || undefined,
-        heading: newsletter.heading,
-        subtitle: newsletter.subtitle || undefined,
-        heroImageUrl,
-        eventDate: newsletter.eventDetails?.eventDate || undefined,
-        eventLocation: newsletter.eventDetails?.eventLocation || undefined,
-        bodyHtml,
-        ctaButtons: ctaButtons.length > 0 ? ctaButtons : undefined,
-      }),
+      <EventNewsletterTemplate
+        previewText={newsletter.previewText || undefined}
+        heading={newsletter.heading}
+        subtitle={newsletter.subtitle || undefined}
+        heroImageUrl={heroImageUrl}
+        eventDate={newsletter.eventDetails?.eventDate || undefined}
+        eventLocation={newsletter.eventDetails?.eventLocation || undefined}
+        bodyHtml={bodyHtml}
+        ctaButtons={ctaButtons.length > 0 ? ctaButtons : undefined}
+      />,
     )
   }
 
   return render(
-    NewsletterTemplate({
-      previewText: newsletter.previewText || undefined,
-      heading: newsletter.heading,
-      subtitle: newsletter.subtitle || undefined,
-      heroImageUrl,
-      bodyHtml,
-      ctaButtons: ctaButtons.length > 0 ? ctaButtons : undefined,
-      recipientName,
-    }),
+    <NewsletterTemplate
+      previewText={newsletter.previewText || undefined}
+      heading={newsletter.heading}
+      subtitle={newsletter.subtitle || undefined}
+      heroImageUrl={heroImageUrl}
+      bodyHtml={bodyHtml}
+      ctaButtons={ctaButtons.length > 0 ? ctaButtons : undefined}
+      recipientName={recipientName}
+    />,
   )
 }
