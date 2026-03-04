@@ -656,7 +656,7 @@ export interface Newsletter {
   /**
    * Choose which group of members will receive this newsletter
    */
-  recipientGroup: 'all' | 'global' | 'nl';
+  recipientGroup: 'all' | 'nl';
   /**
    * Status is updated automatically when sending
    */

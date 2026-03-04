@@ -2,22 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { UseSend } from 'usesend-js'
-import { cookies } from 'next/headers'
 import { renderNewsletterHtml } from '@/emails/renderNewsletter'
+import { getBaseUrl } from '@/lib/getBaseUrl'
 
 export const dynamic = 'force-dynamic'
 
-function getBaseUrl(request: NextRequest): string {
-  const proto = request.headers.get('x-forwarded-proto') || 'http'
-  const host = request.headers.get('host') || 'localhost:3000'
-  return process.env.NEXT_PUBLIC_SITE_URL || `${proto}://${host}`
-}
-
 export async function POST(request: NextRequest) {
   try {
-    const cookieStore = await cookies()
-    const token = cookieStore.get('payload-token')?.value
-    if (!token) {
+    const payload = await getPayload({ config })
+    const { user } = await payload.auth({ headers: request.headers })
+    if (!user) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
     }
 
@@ -28,7 +22,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { id, testEmail } = await request.json()
+    const { id, testEmail } = await request.json() as { id: string; testEmail: string }
 
     if (!id) {
       return NextResponse.json({ message: 'Newsletter ID is required' }, { status: 400 })
@@ -37,7 +31,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: 'Test email address is required' }, { status: 400 })
     }
 
-    const payload = await getPayload({ config })
     const newsletter = await payload.findByID({
       collection: 'newsletters',
       id,

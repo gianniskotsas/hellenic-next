@@ -13,11 +13,7 @@ import {
   Preview,
 } from '@react-email/components'
 import * as React from 'react'
-
-export interface CtaButton {
-  text: string
-  url: string
-}
+import { type CtaButton } from './NewsletterTemplate'
 
 export interface EventNewsletterTemplateProps {
   previewText?: string

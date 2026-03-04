@@ -16,6 +16,7 @@ const NewsletterActions: React.FC = () => {
   const [sendLiveStatus, setSendLiveStatus] = useState<SendStatus>('idle')
   const [testEmail, setTestEmail] = useState((user as Record<string, unknown>)?.email as string || '')
   const [message, setMessage] = useState('')
+  const [messageIsError, setMessageIsError] = useState(false)
 
   const handlePreview = useCallback(async () => {
     if (!id) {
@@ -64,13 +65,16 @@ const NewsletterActions: React.FC = () => {
       const data = await response.json()
       if (response.ok) {
         setSendTestStatus('success')
+        setMessageIsError(false)
         setMessage(data.message)
       } else {
         setSendTestStatus('error')
+        setMessageIsError(true)
         setMessage(data.message || 'Failed to send test email')
       }
     } catch {
       setSendTestStatus('error')
+      setMessageIsError(true)
       setMessage('Network error while sending test email')
     }
   }, [id, testEmail])
@@ -100,13 +104,16 @@ const NewsletterActions: React.FC = () => {
       const data = await response.json()
       if (response.ok) {
         setSendLiveStatus('success')
+        setMessageIsError(false)
         setMessage(data.message)
       } else {
         setSendLiveStatus('error')
+        setMessageIsError(true)
         setMessage(data.message || 'Failed to send newsletter')
       }
     } catch {
       setSendLiveStatus('error')
+      setMessageIsError(true)
       setMessage('Network error while sending newsletter')
     }
   }, [id])
@@ -202,12 +209,9 @@ const NewsletterActions: React.FC = () => {
           <div
             style={{
               ...styles.message,
-              backgroundColor:
-                sendTestStatus === 'error' || sendLiveStatus === 'error' ? '#fef2f2' : '#f0fdf4',
-              borderColor:
-                sendTestStatus === 'error' || sendLiveStatus === 'error' ? '#fecaca' : '#bbf7d0',
-              color:
-                sendTestStatus === 'error' || sendLiveStatus === 'error' ? '#991b1b' : '#166534',
+              backgroundColor: messageIsError ? '#fef2f2' : '#f0fdf4',
+              borderColor: messageIsError ? '#fecaca' : '#bbf7d0',
+              color: messageIsError ? '#991b1b' : '#166534',
             }}
           >
             {message}

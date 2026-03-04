@@ -139,7 +139,6 @@ export const Newsletters: CollectionConfig = {
       label: 'Recipients',
       options: [
         { label: 'All Members', value: 'all' },
-        { label: 'Global Subscribers', value: 'global' },
         { label: 'Netherlands Subscribers', value: 'nl' },
       ],
       admin: {
