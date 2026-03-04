@@ -24,7 +24,7 @@ export interface NewsletterTemplateProps {
   heading: string
   subtitle?: string
   heroImageUrl?: string
-  body: string
+  bodyHtml: string
   ctaButtons?: CtaButton[]
   recipientName?: string
 }
@@ -34,14 +34,10 @@ export const NewsletterTemplate: React.FC<NewsletterTemplateProps> = ({
   heading,
   subtitle,
   heroImageUrl,
-  body,
+  bodyHtml,
   ctaButtons,
   recipientName,
 }) => {
-  const formattedBody = body.includes('<')
-    ? body
-    : body.replace(/\n\n/g, '</p><p>').replace(/\n/g, '<br />')
-
   return (
     <Html lang="en">
       <Head>
@@ -91,9 +87,7 @@ export const NewsletterTemplate: React.FC<NewsletterTemplateProps> = ({
 
             <div
               style={bodyStyle}
-              dangerouslySetInnerHTML={{
-                __html: formattedBody.startsWith('<') ? formattedBody : `<p>${formattedBody}</p>`,
-              }}
+              dangerouslySetInnerHTML={{ __html: bodyHtml }}
             />
 
             {ctaButtons && ctaButtons.length > 0 && (

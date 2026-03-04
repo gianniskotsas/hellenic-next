@@ -1,6 +1,7 @@
 import { render } from '@react-email/render'
 import { NewsletterTemplate } from './NewsletterTemplate'
 import { EventNewsletterTemplate } from './EventNewsletterTemplate'
+import { lexicalToHtml } from './lexicalToHtml'
 import type { CtaButton } from './NewsletterTemplate'
 
 interface MediaDoc {
@@ -15,7 +16,7 @@ interface NewsletterDoc {
   heading: string
   subtitle?: string | null
   heroImage?: string | number | MediaDoc | null
-  body: string
+  body: unknown
   ctaButtons?: Array<{ text: string; url: string }> | null
   eventDetails?: {
     eventDate?: string | null
@@ -44,6 +45,8 @@ export async function renderNewsletterHtml(
     (b) => b.text && b.url,
   )
 
+  const bodyHtml = lexicalToHtml(newsletter.body as Parameters<typeof lexicalToHtml>[0])
+
   if (newsletter.template === 'event') {
     return render(
       EventNewsletterTemplate({
@@ -53,7 +56,7 @@ export async function renderNewsletterHtml(
         heroImageUrl,
         eventDate: newsletter.eventDetails?.eventDate || undefined,
         eventLocation: newsletter.eventDetails?.eventLocation || undefined,
-        body: newsletter.body,
+        bodyHtml,
         ctaButtons: ctaButtons.length > 0 ? ctaButtons : undefined,
       }),
     )
@@ -65,7 +68,7 @@ export async function renderNewsletterHtml(
       heading: newsletter.heading,
       subtitle: newsletter.subtitle || undefined,
       heroImageUrl,
-      body: newsletter.body,
+      bodyHtml,
       ctaButtons: ctaButtons.length > 0 ? ctaButtons : undefined,
       recipientName,
     }),

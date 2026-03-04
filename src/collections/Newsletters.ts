@@ -73,12 +73,11 @@ export const Newsletters: CollectionConfig = {
     },
     {
       name: 'body',
-      type: 'textarea',
+      type: 'richText',
       required: true,
       label: 'Content',
       admin: {
-        description: 'The main content of the newsletter. Supports HTML for formatting.',
-        rows: 10,
+        description: 'The main content of the newsletter. Use the toolbar for headings, bold, italic, lists, links, etc.',
       },
     },
     {

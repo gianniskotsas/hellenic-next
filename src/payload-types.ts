@@ -610,9 +610,23 @@ export interface Newsletter {
    */
   heroImage?: (number | null) | Media;
   /**
-   * The main content of the newsletter. Supports HTML for formatting.
+   * The main content of the newsletter. Use the toolbar for headings, bold, italic, lists, links, etc.
    */
-  body: string;
+  body: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
   /**
    * Add one or more CTA buttons. Leave empty for no buttons.
    */

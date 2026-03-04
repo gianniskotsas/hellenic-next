@@ -26,7 +26,7 @@ export interface EventNewsletterTemplateProps {
   heroImageUrl?: string
   eventDate?: string
   eventLocation?: string
-  body: string
+  bodyHtml: string
   ctaButtons?: CtaButton[]
 }
 
@@ -37,7 +37,7 @@ export const EventNewsletterTemplate: React.FC<EventNewsletterTemplateProps> = (
   heroImageUrl,
   eventDate,
   eventLocation,
-  body,
+  bodyHtml,
   ctaButtons,
 }) => {
   return (
@@ -121,11 +121,9 @@ export const EventNewsletterTemplate: React.FC<EventNewsletterTemplateProps> = (
               </Section>
             )}
 
-            {/* Description */}
+            {/* Rich text body */}
             <Section className="mb-[50px]">
-              <Text className="text-[16px] text-[#2b2b2b] m-0 leading-[1.6]">
-                {body}
-              </Text>
+              <div dangerouslySetInnerHTML={{ __html: bodyHtml }} />
             </Section>
 
             {/* CTA Buttons */}
