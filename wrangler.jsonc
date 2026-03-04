@@ -30,7 +30,7 @@
       "binding": "D1",
       "database_id": "f5f3eeb6-586c-4a7f-a0e4-79564523673b",
       "database_name": "hellenic-next-db",
-      "remote": true,
+      "remote": false,
     },
   ],
   "services": [

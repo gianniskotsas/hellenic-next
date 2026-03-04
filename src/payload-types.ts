@@ -73,6 +73,7 @@ export interface Config {
     'blog-posts': BlogPost;
     'blog-categories': BlogCategory;
     events: Event;
+    newsletters: Newsletter;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -86,6 +87,7 @@ export interface Config {
     'blog-posts': BlogPostsSelect<false> | BlogPostsSelect<true>;
     'blog-categories': BlogCategoriesSelect<false> | BlogCategoriesSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
+    newsletters: NewslettersSelect<false> | NewslettersSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -576,6 +578,106 @@ export interface Event {
   createdAt: string;
 }
 /**
+ * Create and send newsletters to community members.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newsletters".
+ */
+export interface Newsletter {
+  id: number;
+  /**
+   * Choose the email layout template
+   */
+  template: 'general' | 'event';
+  /**
+   * The subject line of the newsletter email
+   */
+  subject: string;
+  /**
+   * Short preview text shown in email clients (before opening)
+   */
+  previewText?: string | null;
+  /**
+   * Main heading displayed in the email body
+   */
+  heading: string;
+  /**
+   * Displayed below the heading (e.g. "Networking & Holiday Cheer in Amsterdam")
+   */
+  subtitle?: string | null;
+  /**
+   * An image displayed in the email (e.g. event illustration, banner). Logos are hardcoded in templates.
+   */
+  heroImage?: (number | null) | Media;
+  /**
+   * The main content of the newsletter. Use the toolbar for headings, bold, italic, lists, links, etc.
+   */
+  body: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  /**
+   * Add one or more CTA buttons. Leave empty for no buttons.
+   */
+  ctaButtons?:
+    | {
+        /**
+         * e.g. "RSVP Now", "Read More", "Register"
+         */
+        text: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Only used when the Event Invitation template is selected.
+   */
+  eventDetails?: {
+    /**
+     * e.g. "Wednesday, December 10th, 18:30"
+     */
+    eventDate?: string | null;
+    /**
+     * e.g. "A Beautiful Mess, Amsterdam"
+     */
+    eventLocation?: string | null;
+  };
+  /**
+   * Choose which group of members will receive this newsletter
+   */
+  recipientGroup: 'all' | 'nl';
+  /**
+   * Status is updated automatically when sending
+   */
+  status: 'draft' | 'sending' | 'sent' | 'failed';
+  sentAt?: string | null;
+  /**
+   * Total recipients targeted
+   */
+  totalRecipients?: number | null;
+  /**
+   * Emails successfully sent
+   */
+  totalSent?: number | null;
+  /**
+   * Emails that failed to send
+   */
+  totalFailed?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -622,6 +724,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'events';
         value: number | Event;
+      } | null)
+    | ({
+        relationTo: 'newsletters';
+        value: number | Newsletter;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -805,6 +911,40 @@ export interface EventsSelect<T extends boolean = true> {
         tag?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "newsletters_select".
+ */
+export interface NewslettersSelect<T extends boolean = true> {
+  template?: T;
+  subject?: T;
+  previewText?: T;
+  heading?: T;
+  subtitle?: T;
+  heroImage?: T;
+  body?: T;
+  ctaButtons?:
+    | T
+    | {
+        text?: T;
+        url?: T;
+        id?: T;
+      };
+  eventDetails?:
+    | T
+    | {
+        eventDate?: T;
+        eventLocation?: T;
+      };
+  recipientGroup?: T;
+  status?: T;
+  sentAt?: T;
+  totalRecipients?: T;
+  totalSent?: T;
+  totalFailed?: T;
   updatedAt?: T;
   createdAt?: T;
 }

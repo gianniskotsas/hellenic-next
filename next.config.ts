@@ -7,6 +7,7 @@ initOpenNextCloudflareForDev()
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Your Next.js config here
+  output: 'standalone' as const,
   images: {
     // Disable Next.js image optimization for Cloudflare Workers
     // Images are served directly from R2 via the custom media route
