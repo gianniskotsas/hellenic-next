@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 const SubscribersNavLink: React.FC = () => {
@@ -8,7 +9,7 @@ const SubscribersNavLink: React.FC = () => {
   const isActive = pathname === '/admin/subscribers'
 
   return (
-    <a
+    <Link
       href="/admin/subscribers"
       style={{
         display: 'flex',
@@ -23,7 +24,7 @@ const SubscribersNavLink: React.FC = () => {
       }}
     >
       Subscribers
-    </a>
+    </Link>
   )
 }
 
