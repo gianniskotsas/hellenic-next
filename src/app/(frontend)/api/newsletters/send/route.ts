@@ -41,6 +41,18 @@ export async function POST(request: NextRequest) {
       )
     }
 
+    // Determine which UseSend contact book to use based on recipient group
+    const contactBookId = newsletter.recipientGroup === 'nl'
+      ? process.env.USESEND_CONTACTS_NL
+      : process.env.USESEND_CONTACTS_GLOBAL
+
+    if (!contactBookId) {
+      return NextResponse.json(
+        { message: `Contact book not configured for group "${newsletter.recipientGroup}". Set the appropriate USESEND_CONTACTS_* env var.` },
+        { status: 500 },
+      )
+    }
+
     await payload.update({
       collection: 'newsletters',
       id,
@@ -48,73 +60,51 @@ export async function POST(request: NextRequest) {
       overrideAccess: true,
     })
 
-    let where = {}
-    if (newsletter.recipientGroup === 'nl') {
-      where = { country: { equals: 'NL' } }
-    }
+    const baseUrl = getBaseUrl(request)
+    const html = await renderNewsletterHtml(newsletter, baseUrl)
 
-    const recipients = await payload.find({
-      collection: 'members',
-      where,
-      limit: 10000,
-      overrideAccess: true,
+    const usesend = new UseSend(process.env.USESEND_API_KEY)
+
+    // Create and immediately send a campaign to the UseSend contact book
+    const { data: campaign, error: campaignError } = await usesend.campaigns.create({
+      name: `Newsletter: ${newsletter.subject}`,
+      from: process.env.USESEND_FROM_EMAIL!,
+      subject: newsletter.subject,
+      contactBookId,
+      html,
+      sendNow: true,
     })
 
-    const totalRecipients = recipients.docs.length
-
-    if (totalRecipients === 0) {
+    if (campaignError || !campaign) {
+      console.error('Failed to create UseSend campaign:', campaignError)
       await payload.update({
         collection: 'newsletters',
         id,
-        data: { status: 'failed', totalRecipients: 0, totalSent: 0, totalFailed: 0 },
+        data: { status: 'failed' },
         overrideAccess: true,
       })
       return NextResponse.json(
-        { message: 'No recipients found for the selected group' },
-        { status: 400 },
+        { message: `Failed to create email campaign: ${campaignError?.message || 'Unknown error'}` },
+        { status: 500 },
       )
     }
 
-    const baseUrl = getBaseUrl(request)
-    const usesend = new UseSend(process.env.USESEND_API_KEY)
-    let sent = 0
-    let failed = 0
-
-    for (const member of recipients.docs) {
-      try {
-        const recipientName = `${member.firstName} ${member.lastName}`.trim()
-        const html = await renderNewsletterHtml(newsletter, baseUrl, recipientName || undefined)
-
-        await usesend.emails.send({
-          to: member.email,
-          from: process.env.USESEND_FROM_EMAIL!,
-          subject: newsletter.subject,
-          html,
-        })
-        sent++
-      } catch (err) {
-        console.error(`Failed to send to ${member.email}:`, err)
-        failed++
-      }
-    }
-
-    const finalStatus = failed === totalRecipients ? 'failed' : 'sent'
     await payload.update({
       collection: 'newsletters',
       id,
       data: {
-        status: finalStatus,
+        status: 'sent',
         sentAt: new Date().toISOString(),
-        totalRecipients,
-        totalSent: sent,
-        totalFailed: failed,
+        totalRecipients: campaign.total,
+        totalSent: campaign.total,
+        totalFailed: 0,
       },
       overrideAccess: true,
     })
 
     return NextResponse.json({
-      message: `Newsletter sent: ${sent} delivered, ${failed} failed out of ${totalRecipients} recipients`,
-      stats: { totalRecipients, sent, failed },
+      message: `Newsletter campaign created and sending to ${campaign.total} recipients`,
+      stats: { totalRecipients: campaign.total, campaignId: campaign.id },
     })
   } catch (error) {
     console.error('Error sending newsletter:', error)
