@@ -22,10 +22,10 @@ async function fetchContacts(
   page: number,
   limit: number,
 ): Promise<UseSendContact[]> {
-  const url = `https://app.usesend.com/api/v1/contactBooks/${contactBookId}/contacts?page=${page}&limit=${limit}`
+  const url = `https://app.usesend.com/api/v1/contactBooks/${contactBookId}/contacts`
   const response = await fetch(url, {
     headers: {
-      Authorization: `Bearer ${apiKey}`,
+      'Authorization': `Bearer ${apiKey}`,
     },
   })
 
