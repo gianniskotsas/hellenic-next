@@ -38,6 +38,15 @@ export default buildConfig({
     importMap: {
       baseDir: path.resolve(dirname),
     },
+    components: {
+      views: {
+        subscribers: {
+          Component: '/components/admin/SubscribersView',
+          path: '/subscribers',
+        },
+      },
+      afterNavLinks: ['/components/admin/SubscribersNavLink'],
+    },
   },
   collections: [Users, Media, Members, BlogPosts, BlogCategories, Events, Newsletters],
   editor: lexicalEditor(),

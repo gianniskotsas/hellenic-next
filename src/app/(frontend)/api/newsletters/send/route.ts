@@ -65,6 +65,9 @@ export async function POST(request: NextRequest) {
 
     const usesend = new UseSend(process.env.USESEND_API_KEY)
 
+    // Strip HTML tags to create a plain text version for the campaign
+    const content = html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()
+
     // Create and immediately send a campaign to the UseSend contact book
     const { data: campaign, error: campaignError } = await usesend.campaigns.create({
       name: `Newsletter: ${newsletter.subject}`,
@@ -72,19 +75,28 @@ export async function POST(request: NextRequest) {
       subject: newsletter.subject,
       contactBookId,
       html,
+      content,
       sendNow: true,
     })
 
     if (campaignError || !campaign) {
-      console.error('Failed to create UseSend campaign:', campaignError)
+      console.error('Failed to create UseSend campaign:', JSON.stringify(campaignError, null, 2))
+      console.error('Campaign response data:', JSON.stringify(campaign, null, 2))
       await payload.update({
         collection: 'newsletters',
         id,
         data: { status: 'failed' },
         overrideAccess: true,
       })
+      // The SDK may return error as { message, code } or as { error: { message, code } }
+      const err = campaignError as Record<string, unknown> | null
+      const errorMsg = err?.message as string
+        || (err?.error as Record<string, unknown>)?.message as string
+        || (typeof campaignError === 'string' ? campaignError : null)
+        || JSON.stringify(campaignError)
+        || 'Unknown error'
       return NextResponse.json(
-        { message: `Failed to create email campaign: ${campaignError?.message || 'Unknown error'}` },
+        { message: `Failed to create email campaign: ${errorMsg}` },
         { status: 500 },
       )
     }
