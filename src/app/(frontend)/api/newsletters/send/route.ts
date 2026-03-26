@@ -70,7 +70,6 @@ export async function POST(request: NextRequest) {
       subject: newsletter.subject,
       contactBookId,
       html,
-      content: newsletter.subject,
       sendNow: true,
     }
 
