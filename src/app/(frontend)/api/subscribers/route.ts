@@ -112,8 +112,9 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('Error fetching subscribers:', error)
+    const errorMsg = error instanceof Error ? error.message : String(error)
     return NextResponse.json(
-      { message: 'Failed to fetch subscribers. Check server logs for details.' },
+      { message: `Failed to fetch subscribers: ${errorMsg}` },
       { status: 500 },
     )
   }
