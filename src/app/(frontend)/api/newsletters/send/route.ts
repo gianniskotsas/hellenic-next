@@ -64,11 +64,15 @@ export async function POST(request: NextRequest) {
 
     // Create and immediately send a campaign via UseSend REST API directly
     // (bypassing the SDK for better error visibility and control)
+    // Strip HTML tags for plain-text version (required by UseSend API)
+    const content = html.replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim().slice(0, 500)
+
     const campaignBody = {
       name: `Newsletter: ${newsletter.subject}`,
       from: process.env.USESEND_FROM_EMAIL!,
       subject: newsletter.subject,
       contactBookId,
+      content,
       html,
       sendNow: true,
     }

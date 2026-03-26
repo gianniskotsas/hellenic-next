@@ -178,6 +178,11 @@ export const NewsletterTemplate: React.FC<NewsletterTemplateProps> = ({
                   </td>
                 </tr>
               </table>
+              <Text className="mt-[16px] text-[12px] text-gray-400 leading-[20px]">
+                <Link href="{{usesend_unsubscribe_url}}" className="text-gray-400 underline">
+                  Unsubscribe
+                </Link>
+              </Text>
             </Section>
 
           </Container>
