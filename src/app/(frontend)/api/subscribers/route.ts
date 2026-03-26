@@ -34,9 +34,11 @@ async function fetchContacts(
     throw new Error(`UseSend API error: ${response.status} - ${errorText}`)
   }
 
-  const data = await response.json()
+  const data: unknown = await response.json()
   // Handle both array responses and paginated wrapper objects
-  return Array.isArray(data) ? data : data.data ?? data.contacts ?? []
+  if (Array.isArray(data)) return data as UseSendContact[]
+  const obj = data as Record<string, unknown>
+  return (obj.data ?? obj.contacts ?? []) as UseSendContact[]
 }
 
 export async function GET(request: NextRequest) {
