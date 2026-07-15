@@ -48,7 +48,10 @@ export default buildConfig({
     client: {
       url: process.env.DATABASE_URI || 'file:./hellenic.db',
     },
-    push: true, // Auto-sync schema to database (matches previous D1 behaviour)
+    // Production uses migrations (run on deploy); `push` stays on only for
+    // local dev convenience.
+    push: process.env.NODE_ENV !== 'production',
+    migrationDir: path.resolve(dirname, 'migrations'),
   }),
   // database-adapter-config-end
   // Only configure email if SMTP credentials are provided

@@ -31,7 +31,15 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/next.config.ts ./next.config.ts
+# Source + config needed so the Payload CLI can run migrations at boot.
+COPY --from=builder /app/tsconfig.json ./tsconfig.json
+COPY --from=builder /app/src ./src
+COPY --from=builder /app/scripts ./scripts
+# Point the Payload CLI at the config explicitly.
+ENV PAYLOAD_CONFIG_PATH=/app/src/payload.config.ts
+ENV NODE_OPTIONS=--no-deprecation
 # Persistent volume mount point for the SQLite database.
 RUN mkdir -p /data
 EXPOSE 3000
-CMD ["pnpm", "start"]
+# Self-baseline (if needed) -> payload migrate -> next start (migrate is non-fatal).
+CMD ["sh", "scripts/start-prod.sh"]
