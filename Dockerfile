@@ -1,9 +1,8 @@
 # Node/container build of hellenic-next (Next.js 15 + Payload CMS 3).
 # Re-platformed off Cloudflare Workers: D1 -> Node SQLite, R2 -> S3 API.
 FROM node:22-bookworm-slim AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="/pnpm:$PATH"
-RUN corepack enable
+# Pin pnpm to a version the repo supports (engines.pnpm = ^9 || ^10)
+RUN npm install -g pnpm@10
 WORKDIR /app
 
 # ---- deps ----
