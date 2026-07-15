@@ -5,23 +5,18 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build && opennextjs-cloudflare build --skipNextBuild",
+    "build": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" payload generate:importmap && cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
     "build:node": "cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" payload generate:importmap && cross-env NODE_OPTIONS=\"--no-deprecation --max-old-space-size=8000\" next build",
     "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
     "start:prod": "sh ./scripts/start-prod.sh",
-    "deploy": "pnpm run deploy:database && pnpm run deploy:app",
-    "deploy:app": "rm -rf .next/cache && opennextjs-cloudflare build --skipNextBuild --env=$CLOUDFLARE_ENV && opennextjs-cloudflare deploy --env=$CLOUDFLARE_ENV",
-    "deploy:database": "wrangler d1 execute D1 --file=migrations/newsletters.sql --env=$CLOUDFLARE_ENV --remote || echo 'Newsletter migration skipped' && wrangler d1 execute D1 --command \"ALTER TABLE payload_locked_documents_rels ADD COLUMN newsletters_id integer REFERENCES newsletters(id)\" --env=$CLOUDFLARE_ENV --remote || echo 'Column already exists' && wrangler d1 execute D1 --command 'CREATE INDEX IF NOT EXISTS payload_locked_documents_rels_newsletters_id_idx ON payload_locked_documents_rels (newsletters_id)' --env=$CLOUDFLARE_ENV --remote || echo 'Index already exists' && wrangler d1 execute D1 --command 'PRAGMA optimize' --env=$CLOUDFLARE_ENV --remote || echo 'Database optimization skipped'",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
-    "devsafe": "rm -rf .next && rm -rf .open-next && cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "devsafe": "rm -rf .next && cross-env NODE_OPTIONS=--no-deprecation next dev",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
-    "generate:types": "pnpm run generate:types:cloudflare && pnpm run generate:types:payload",
-    "generate:types:cloudflare": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
+    "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "generate:types:payload": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
     "ii": "pnpm install --ignore-workspace",
     "lint": "cross-env NODE_OPTIONS=--no-deprecation next lint",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview --env=$CLOUDFLARE_ENV",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "test": "pnpm run test:int && pnpm run test:e2e",
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --no-experimental-strip-types\" pnpm exec playwright test",
@@ -31,13 +26,10 @@
     "@aws-sdk/client-s3": "^3.826.0",
     "@hookform/resolvers": "3.9.1",
     "@libsql/client": "0.14.0",
-    "@opennextjs/cloudflare": "^1.6.5",
-    "@payloadcms/db-d1-sqlite": "3.63.0",
     "@payloadcms/db-sqlite": "3.63.0",
     "@payloadcms/email-nodemailer": "3.63.0",
     "@payloadcms/next": "3.63.0",
     "@payloadcms/richtext-lexical": "3.63.0",
-    "@payloadcms/storage-r2": "3.63.0",
     "@payloadcms/storage-s3": "3.63.0",
     "@payloadcms/ui": "3.63.0",
     "@radix-ui/react-dialog": "^1.1.15",
@@ -88,8 +80,7 @@
     "tailwindcss": "3.4.17",
     "typescript": "5.7.3",
     "vite-tsconfig-paths": "5.1.4",
-    "vitest": "3.2.3",
-    "wrangler": "~4.42.0"
+    "vitest": "3.2.3"
   },
   "engines": {
     "node": "^18.20.2 || >=20.9.0",
@@ -101,12 +92,5 @@
       "esbuild",
       "unrs-resolver"
     ]
-  },
-  "cloudflare": {
-    "bindings": {
-      "PAYLOAD_SECRET": {
-        "description": "Generate a random string using `openssl rand -hex 32`"
-      }
-    }
   }
 }
