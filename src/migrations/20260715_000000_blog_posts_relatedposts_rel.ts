@@ -12,19 +12,29 @@ import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-sqlite'
  * which makes any blog query that selects related posts fail with
  * `SQLITE_ERROR: no such column: blog_posts_id`.
  *
- * This migration adds the column (and its index) if — and only if — it is
- * absent, so it is safe to run against both drifted and already-correct
- * databases.
+ * This migration is idempotent: it checks for the column first and only adds
+ * it when absent, so it is safe on both drifted and already-correct
+ * databases (a failing `ALTER` cannot be swallowed inside Payload's migration
+ * transaction, so we must avoid raising it at all).
  */
+async function columnExists(
+  db: MigrateUpArgs['db'],
+  table: string,
+  column: string,
+): Promise<boolean> {
+  const res: any = await db.run(
+    sql`SELECT COUNT(*) AS n FROM pragma_table_info(${table}) WHERE name = ${column}`,
+  )
+  const row = res?.rows?.[0] ?? (Array.isArray(res) ? res[0] : undefined)
+  const n = row ? Number(row.n ?? row['n'] ?? row[0] ?? 0) : 0
+  return n > 0
+}
+
 export async function up({ db }: MigrateUpArgs): Promise<void> {
-  try {
+  if (!(await columnExists(db, 'blog_posts_rels', 'blog_posts_id'))) {
     await db.run(
       sql`ALTER TABLE \`blog_posts_rels\` ADD COLUMN \`blog_posts_id\` integer REFERENCES \`blog_posts\`(\`id\`) ON UPDATE no action ON DELETE cascade`,
     )
-  } catch (err: unknown) {
-    // Column already present (correct schema) — ignore only that case.
-    const message = err instanceof Error ? err.message : String(err)
-    if (!/duplicate column name/i.test(message)) throw err
   }
 
   await db.run(
