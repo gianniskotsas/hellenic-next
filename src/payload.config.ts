@@ -80,8 +80,12 @@ export default buildConfig({
       collections: {
         media: {
           disableLocalStorage: true,
+          // Serve media directly from the existing R2 public custom domain
+          // (cdn.hellenicnext.com) — no credentials needed for display. R2
+          // write credentials are only required for uploading new media.
           generateFileURL: ({ filename }) => {
-            return `/api/media/file/${filename}`
+            const base = process.env.R2_PUBLIC_URL || 'https://cdn.hellenicnext.com'
+            return `${base}/${encodeURIComponent(filename)}`
           },
         },
       },
