@@ -1,43 +1,49 @@
-import { getCloudflareContext } from '@opennextjs/cloudflare'
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { NextRequest, NextResponse } from 'next/server'
 
 export const dynamic = 'force-dynamic'
+
+const s3 = new S3Client({
+  region: 'auto',
+  endpoint: process.env.R2_S3_ENDPOINT,
+  forcePathStyle: true,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
+  },
+})
+
+const BUCKET = process.env.R2_BUCKET || 'hellenic-next-r2'
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ filename: string }> },
 ) {
   try {
-    const { env } = await getCloudflareContext()
     const { filename } = await params
 
-    if (!env.R2) {
-      console.error('R2 binding not available')
-      return new NextResponse('R2 binding not available', { status: 500 })
-    }
+    const object = await s3.send(new GetObjectCommand({ Bucket: BUCKET, Key: filename }))
 
-    // Fetch file from R2
-    const object = await env.R2.get(filename)
-
-    if (!object) {
+    if (!object.Body) {
       console.error(`File not found in R2: ${filename}`)
       return new NextResponse('File not found', { status: 404 })
     }
 
-    // Get the file content
-    const blob = await object.blob()
+    const bytes = await object.Body.transformToByteArray()
 
-    // Return the file with appropriate headers
-    return new NextResponse(blob, {
+    return new NextResponse(Buffer.from(bytes), {
       status: 200,
       headers: {
-        'Content-Type': object.httpMetadata?.contentType || 'application/octet-stream',
-        'Content-Length': object.size.toString(),
+        'Content-Type': object.ContentType || 'application/octet-stream',
+        'Content-Length': String(object.ContentLength ?? bytes.length),
         'Cache-Control': 'public, max-age=31536000, immutable',
-        ETag: object.etag,
+        ...(object.ETag ? { ETag: object.ETag } : {}),
       },
     })
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.name === 'NoSuchKey' || error?.$metadata?.httpStatusCode === 404) {
+      return new NextResponse('File not found', { status: 404 })
+    }
     console.error('Error serving file from R2:', error)
     return new NextResponse('Internal Server Error', { status: 500 })
   }

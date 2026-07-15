@@ -1,0 +1,11 @@
+node_modules
+.next
+.open-next
+.git
+.wrangler
+*.log
+.env
+.env.*
+!.env.example
+playwright-report
+test-results

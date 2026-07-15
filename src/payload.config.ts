@@ -1,12 +1,10 @@
 // storage-adapter-import-placeholder
-import { sqliteD1Adapter } from '@payloadcms/db-d1-sqlite' // database-adapter-import
+import { sqliteAdapter } from '@payloadcms/db-sqlite' // database-adapter-import
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import path from 'path'
 import { buildConfig } from 'payload'
 import { fileURLToPath } from 'url'
-import { CloudflareContext, getCloudflareContext } from '@opennextjs/cloudflare'
-import { GetPlatformProxyOptions } from 'wrangler'
-import { r2Storage } from '@payloadcms/storage-r2'
+import { s3Storage } from '@payloadcms/storage-s3'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 
 import { Users } from './collections/Users'
@@ -19,18 +17,6 @@ import { Newsletters } from './collections/Newsletters'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-
-// Detect if we're running Payload CLI commands (generate/migrate)
-const isPayloadCommand = process.argv.find((value) => value.match(/^(generate|migrate):?/))
-
-// Detect if we're in Cloudflare runtime (set by wrangler.jsonc vars)
-const isCloudflareRuntime = process.env.CLOUDFLARE_RUNTIME === 'true'
-
-// Get Cloudflare context based on environment
-const cloudflare =
-  isPayloadCommand || !isCloudflareRuntime
-    ? await getCloudflareContextFromWrangler() // Local dev/build or Payload commands
-    : await getCloudflareContext({ async: true }) // Cloudflare Workers/Pages runtime
 
 export default buildConfig({
   admin: {
@@ -55,9 +41,14 @@ export default buildConfig({
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
   // database-adapter-config-start
-  db: sqliteD1Adapter({
-    binding: cloudflare.env.D1,
-    push: true  // Auto-sync schema to database
+  // Node SQLite (libSQL). DATABASE_URI points at a file on a persistent volume,
+  // e.g. file:/data/hellenic.db. Migrated verbatim from the previous Cloudflare D1
+  // database (same Drizzle SQLite schema).
+  db: sqliteAdapter({
+    client: {
+      url: process.env.DATABASE_URI || 'file:./hellenic.db',
+    },
+    push: true, // Auto-sync schema to database (matches previous D1 behaviour)
   }),
   // database-adapter-config-end
   // Only configure email if SMTP credentials are provided
@@ -82,28 +73,28 @@ export default buildConfig({
     : {}),
   plugins: [
     // storage-adapter-placeholder
-    r2Storage({
+    // Cloudflare R2 accessed over its S3-compatible API (the bucket itself is
+    // unchanged; only the compute moved off Workers). Files are still served
+    // through the custom /api/media/file/[filename] route.
+    s3Storage({
       collections: {
         media: {
           disableLocalStorage: true,
-          // Generate file URL for the custom route
           generateFileURL: ({ filename }) => {
             return `/api/media/file/${filename}`
           },
         },
       },
-      bucket: cloudflare.env.R2,
+      bucket: process.env.R2_BUCKET || 'hellenic-next-r2',
+      config: {
+        endpoint: process.env.R2_S3_ENDPOINT,
+        region: 'auto',
+        credentials: {
+          accessKeyId: process.env.R2_ACCESS_KEY_ID || '',
+          secretAccessKey: process.env.R2_SECRET_ACCESS_KEY || '',
+        },
+        forcePathStyle: true,
+      },
     }),
   ],
 })
-
-// Adapted from https://github.com/opennextjs/opennextjs-cloudflare/blob/d00b3a13e42e65aad76fba41774815726422cc39/packages/cloudflare/src/api/cloudflare-context.ts#L328C36-L328C46
-function getCloudflareContextFromWrangler(): Promise<CloudflareContext> {
-  return import(/* webpackIgnore: true */ `${'__wrangler'.replaceAll('_', '')}`).then(
-    ({ getPlatformProxy }) =>
-      getPlatformProxy({
-        environment: process.env.CLOUDFLARE_ENV,
-        experimental: { remoteBindings: false },
-      } satisfies GetPlatformProxyOptions),
-  )
-}
